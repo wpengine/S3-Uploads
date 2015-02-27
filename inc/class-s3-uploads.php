@@ -34,8 +34,10 @@ class S3_Uploads {
 			require_once dirname( __FILE__ ) . '/class-s3-uploads-local-stream-wrapper.php';
 			stream_wrapper_register( 's3', 'S3_Uploads_Local_Stream_Wrapper', STREAM_IS_URL );
 		} else {
-			$s3 = $this->s3();
-			S3_Uploads_Stream_Wrapper::register( $s3 );
+			require_once dirname( __FILE__ ) . '/aws-sdk/aws-autoloader.php';
+			require_once dirname( __FILE__ ) . '/class-s3-uploads-stream-wrapper.php';
+
+			S3_Uploads_Stream_Wrapper::register_streamwrapper( $this );
 			stream_context_set_option( stream_context_get_default(), 's3', 'ACL', Aws\S3\Enum\CannedAcl::PUBLIC_READ );
 		}
 
@@ -87,9 +89,6 @@ class S3_Uploads {
 	 * @return Aws\S3\S3Client
 	 */
 	public function s3() {
-
-		require_once dirname( __FILE__ ) . '/aws-sdk/aws-autoloader.php';
-		require_once dirname( __FILE__ ) . '/class-s3-uploads-stream-wrapper.php';
 
 		if ( ! empty( $this->s3 ) )
 			return $this->s3;
